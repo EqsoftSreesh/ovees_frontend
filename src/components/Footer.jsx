@@ -1,16 +1,31 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { fetchCategories } from '../services/api'
 
 const Footer = () => {
+  const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const data = await fetchCategories()
+        setCategories(data.slice(0, 6)) // Show only first 6 categories in footer
+      } catch (err) {
+        console.error('Failed to load categories:', err)
+      }
+    }
+    loadCategories()
+  }, [])
+
   return (
-    <footer className="bg-gray-900 text-gray-300 py-12">
+    <footer className="bg-gray-900 text-gray-300 py-8 sm:py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8">
           <div>
-            <h3 className="text-2xl font-bold mb-4">
+            <h3 className="text-xl sm:text-2xl font-bold mb-4">
               <span className="text-teal-400">OVEES</span>{' '}
               <span className="text-orange-400">ELEGANZA</span>
             </h3>
-            <div className="space-y-2">
+            <div className="space-y-2 text-sm sm:text-base">
               <p className="flex items-center gap-2">
                 <span>📱 Whats App</span>
               </p>
@@ -25,12 +40,15 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold text-white mb-4">Popular Categories</h4>
             <ul className="space-y-2 text-sm">
-              <li className="hover:text-teal-400 cursor-pointer">Fruits & Vegetables</li>
-              <li className="hover:text-teal-400 cursor-pointer">Dairy & Breakfasts</li>
-              <li className="hover:text-teal-400 cursor-pointer">Egg, Meat & Fish</li>
-              <li className="hover:text-teal-400 cursor-pointer">Bath & Body</li>
-              <li className="hover:text-teal-400 cursor-pointer">Beauty & Health Juliesh</li>
-              <li className="hover:text-teal-400 cursor-pointer">Snacks & Munchies</li>
+              {categories.length > 0 ? (
+                categories.map((cat) => (
+                  <li key={cat.id} className="hover:text-teal-400 cursor-pointer">
+                    {cat.name}
+                  </li>
+                ))
+              ) : (
+                <li className="text-gray-500">Loading...</li>
+              )}
             </ul>
           </div>
 
@@ -61,8 +79,8 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 pt-6 text-center text-sm">
-          <p>© 2025 All rights reserved, Ovees Eleganza</p>
+        <div className="border-t border-gray-800 pt-6 text-center text-xs sm:text-sm">
+          <p> 2025 All rights reserved, Ovees Eleganza</p>
         </div>
       </div>
     </footer>

@@ -1,28 +1,55 @@
 import React from 'react'
 import { Heart } from 'lucide-react'
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onProductClick, onAddToCart }) => {
+  // Get the first image from the images array or use a placeholder
+  const imageUrl = product.images && product.images.length > 0 
+    ? product.images[0] 
+    : 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop'
+
+  // ✅ FIXED: Handle Add Click
+  const handleAddClick = () => {
+    if (typeof onAddToCart === 'function') {
+      onAddToCart(product, 1)
+    }
+  }
+
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-      <div className="relative">
-        <img src={product.image} alt={product.name} className="w-full h-48 object-cover" />
-        <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-md text-sm font-semibold">
-          {product.discount}% OFF
-        </span>
+      <div className="relative cursor-pointer" onClick={onProductClick}>
+        <img src={imageUrl} alt={product.name} className="w-full h-48 object-cover" />
+        {product.stock_quantity > 0 ? (
+          <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-semibold">
+            In Stock
+          </span>
+        ) : (
+          <span className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-semibold">
+            Out of Stock
+          </span>
+        )}
         <button className="absolute top-2 right-2 bg-white p-2 rounded-full hover:bg-red-50 transition">
           <Heart className="w-5 h-5 text-gray-600 hover:text-red-500" />
         </button>
       </div>
       <div className="p-4">
-        <h3 className="text-gray-800 font-medium mb-2 h-12 line-clamp-2">{product.name}</h3>
+        <h3 
+          className="text-gray-800 font-medium mb-2 h-12 line-clamp-2 cursor-pointer hover:text-teal-600 transition"
+          onClick={onProductClick}
+        >
+          {product.name}
+        </h3>
+        {product.category && (
+          <p className="text-xs text-gray-500 mb-2">{product.category.name}</p>
+        )}
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xl font-bold text-gray-900">₹{product.price}</span>
-          {product.originalPrice && (
-            <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
-          )}
         </div>
-        <button className="w-full bg-emerald-500 text-white py-2 rounded-md hover:bg-emerald-600 transition font-medium">
-          ADD
+        <button 
+          onClick={handleAddClick} // ✅ FIXED: Connected!
+          className="w-full bg-emerald-500 text-white py-2 rounded-md hover:bg-emerald-600 transition font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+          disabled={product.stock_quantity === 0}
+        >
+          {product.stock_quantity > 0 ? 'ADD TO CART' : 'OUT OF STOCK'}
         </button>
       </div>
     </div>
