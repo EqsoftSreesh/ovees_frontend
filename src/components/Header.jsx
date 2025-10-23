@@ -156,7 +156,10 @@ const Header = ({ cartCount, addToCart, setSelectedProduct }) => {
       <div className="container mx-auto px-2 sm:px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <img src="/logo.png" alt="Logo" className="h-8 sm:h-10" />
-          <span className="text-lg sm:text-xl font-bold text-teal-600">Ovees</span>
+         <h1 className="text-xl sm:text-2xl font-bold mb-4">
+              <span className="text-teal-400">OVEES</span>{' '}
+              <span className="text-orange-400">ELEGANZA</span>
+            </h1>
         </div>
 
         {/* Search Bar */}
