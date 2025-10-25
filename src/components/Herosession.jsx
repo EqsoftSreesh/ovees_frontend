@@ -84,7 +84,7 @@ const HeroSection = () => {
           className={`absolute inset-0 transition-opacity duration-1000 ${
             index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
           }`}
-          onClick={() => handleBannerClick(banner)}
+          // onClick={() => handleBannerClick(banner)}
         >
           <img
             src={banner.image_url}
@@ -105,20 +105,20 @@ const HeroSection = () => {
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-4 drop-shadow-lg animate-fade-in">
               {currentBanner.title}
             </h2>
-            {currentBanner.link_url && (
+            {/* {currentBanner.link_url && (
               <button
                 onClick={() => handleBannerClick(currentBanner)}
                 className="pointer-events-auto mt-4 bg-white text-teal-600 px-4 sm:px-6 py-2 sm:py-3 rounded-full font-semibold hover:bg-teal-600 hover:text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 Shop Now
               </button>
-            )}
+            )} */}
           </div>
         </div>
       </div>
 
       {/* Navigation Arrows */}
-      {banners.length > 1 && (
+      {/* {banners.length > 1 && (
         <>
           <button
             onClick={goToPrevious}
@@ -135,7 +135,7 @@ const HeroSection = () => {
             <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6 text-gray-800" />
           </button>
         </>
-      )}
+      )} */}
 
       {/* Dots Indicator */}
       {banners.length > 1 && (

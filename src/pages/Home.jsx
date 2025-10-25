@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import HeroSection from '../components/Herosession'
+import BannerCards from '../components/BannerCards'
 import ProductCard from '../components/ProductCard'
 import ProductCardSkeleton from '../components/ProductCardSkeleton'
 import ProductDetailModal from '../components/ProductDetailModal'
@@ -18,6 +19,7 @@ const Home = ({ addToCart, cartItems = [] }) => {
   const [hasMore, setHasMore] = useState(true)
   const [error, setError] = useState(null)
   const [selectedProduct, setSelectedProduct] = useState(null)
+  const [activeSection, setActiveSection] = useState(null)
   const observerTarget = useRef(null)
   const ITEMS_PER_PAGE = 20
 
@@ -173,160 +175,194 @@ const Home = ({ addToCart, cartItems = [] }) => {
     }, 1)
   }
 
+  // Handle banner card click
+  const handleBannerCardClick = (sectionId) => {
+    setActiveSection(sectionId)
+    // Scroll to section
+    setTimeout(() => {
+      const element = document.getElementById(`section-${sectionId}`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 100)
+  }
+
+  // Get products to display based on active section
+  const getDisplayProducts = () => {
+    switch(activeSection) {
+      case 'new-arrivals':
+        return newArrivals.map(item => item.product)
+      case '99-store':
+        return ninetynineProducts
+      case '199-store':
+        return oneNinetyNineProducts
+      case 'combos':
+        return combos
+      default:
+        return []
+    }
+  }
+
+  const displayProducts = getDisplayProducts()
+
   return (
     <div className="min-h-screen bg-gray-50">
       
       <HeroSection />
       <main className="container mx-auto px-2 sm:px-4 py-6 sm:py-12">
+        
+        {/* Banner Cards - 4 Options */}
+        <BannerCards onCardClick={handleBannerCardClick} />
+
         {/* New Arrivals Section */}
-        {newArrivals.length > 0 && (
-          <section className="mb-8 sm:mb-16 bg-green-50 rounded-xl p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-4 sm:mb-6 px-2">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-200 text-green-800">
-                  🆕 New Arrivals
-                </span>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
-                  Latest Additions
-                </h2>
-              </div>
-              <span className="text-sm text-gray-500">{newArrivals.length} items</span>
+        <section id="section-new-arrivals" className={`mb-8 sm:mb-16 bg-green-50 rounded-xl p-4 sm:p-6 transition-all duration-300 ${
+          activeSection === 'new-arrivals' ? 'ring-2 ring-green-400 shadow-lg' : ''
+        }`}>
+          <div className="flex items-center justify-between mb-4 sm:mb-6 px-2">
+            <div className="flex items-center gap-2">
+              {/* <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-200 text-green-800">
+                🆕 New Arrivals
+              </span> */}
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+                Latest Additions
+              </h2>
             </div>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6">
-              {newArrivals.map((item) => (
-                <ProductCard 
-                  key={item.product.id} 
-                  product={item.product}
-                  onProductClick={() => setSelectedProduct(item.product)}
-                  onAddToCart={addToCart}
-                  cartItems={cartItems}
-                />
-              ))}
-            </div>
-          </section>
-        )}
+            {/* <span className="text-sm text-gray-500">{newArrivals.length} items</span> */}
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6">
+            {newArrivals.map((item) => (
+              <ProductCard 
+                key={item.product.id} 
+                product={item.product}
+                onProductClick={() => setSelectedProduct(item.product)}
+                onAddToCart={addToCart}
+                cartItems={cartItems}
+              />
+            ))}
+          </div>
+        </section>
 
         {/* 99 Store Section */}
-        {ninetynineProducts.length > 0 && (
-          <section className="mb-8 sm:mb-16 bg-yellow-50 rounded-xl p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-4 sm:mb-6 px-2">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-200 text-yellow-800">
-                  🔥 99 Store
-                </span>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
-                  Under ₹99
-                </h2>
-              </div>
-              <span className="text-sm text-gray-500">{ninetynineProducts.length} items</span>
+        <section id="section-99-store" className={`mb-8 sm:mb-16 bg-yellow-50 rounded-xl p-4 sm:p-6 transition-all duration-300 ${
+          activeSection === '99-store' ? 'ring-2 ring-yellow-400 shadow-lg' : ''
+        }`}>
+          <div className="flex items-center justify-between mb-4 sm:mb-6 px-2">
+            <div className="flex items-center gap-2">
+              {/* <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-200 text-yellow-800">
+                🔥 99 Store
+              </span> */}
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+                Under ₹99
+              </h2>
             </div>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6">
-              {ninetynineProducts.map((product) => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product} 
-                  onProductClick={() => setSelectedProduct(product)}
-                  onAddToCart={addToCart}
-                  cartItems={cartItems}
-                />
-              ))}
-            </div>
-          </section>
-        )}
+            {/* <span className="text-sm text-gray-500">{ninetynineProducts.length} items</span> */}
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6">
+            {ninetynineProducts.map((product) => (
+              <ProductCard 
+                key={product.id} 
+                product={product} 
+                onProductClick={() => setSelectedProduct(product)}
+                onAddToCart={addToCart}
+                cartItems={cartItems}
+              />
+            ))}
+          </div>
+        </section>
 
         {/* 199 Store Section */}
-        {oneNinetyNineProducts.length > 0 && (
-          <section className="mb-8 sm:mb-16 bg-blue-50 rounded-xl p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-4 sm:mb-6 px-2">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-200 text-blue-800">
-                  ✨ 199 Store
-                </span>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
-                  Under ₹199
-                </h2>
-              </div>
-              <span className="text-sm text-gray-500">{oneNinetyNineProducts.length} items</span>
+        <section id="section-199-store" className={`mb-8 sm:mb-16 bg-blue-50 rounded-xl p-4 sm:p-6 transition-all duration-300 ${
+          activeSection === '199-store' ? 'ring-2 ring-blue-400 shadow-lg' : ''
+        }`}>
+          <div className="flex items-center justify-between mb-4 sm:mb-6 px-2">
+            <div className="flex items-center gap-2">
+              {/* <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-200 text-blue-800">
+                ✨ 199 Store
+              </span> */}
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+                Under ₹199
+              </h2>
             </div>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6">
-              {oneNinetyNineProducts.map((product) => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product} 
-                  onProductClick={() => setSelectedProduct(product)}
-                  onAddToCart={addToCart}
-                  cartItems={cartItems}
-                />
-              ))}
-            </div>
-          </section>
-        )}
+            {/* <span className="text-sm text-gray-500">{oneNinetyNineProducts.length} items</span> */}
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6">
+            {oneNinetyNineProducts.map((product) => (
+              <ProductCard 
+                key={product.id} 
+                product={product} 
+                onProductClick={() => setSelectedProduct(product)}
+                onAddToCart={addToCart}
+                cartItems={cartItems}
+              />
+            ))}
+          </div>
+        </section>
 
         {/* Combos Section */}
-        {combos.length > 0 && (
-          <section className="mb-8 sm:mb-16 bg-purple-50 rounded-xl p-4 sm:p-6">
-            <div className="flex items-center justify-between mb-4 sm:mb-6 px-2">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-200 text-purple-800">
-                  💍 Combo Deals
-                </span>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
-                  Special Combos
-                </h2>
-              </div>
-              <span className="text-sm text-gray-500">{combos.length} items</span>
+        <section id="section-combos" className={`mb-8 sm:mb-16 bg-purple-50 rounded-xl p-4 sm:p-6 transition-all duration-300 ${
+          activeSection === 'combos' ? 'ring-2 ring-purple-400 shadow-lg' : ''
+        }`}>
+          <div className="flex items-center justify-between mb-4 sm:mb-6 px-2">
+            <div className="flex items-center gap-2">
+              {/* <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-200 text-purple-800">
+                💍 Combo Deals
+              </span> */}
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+                Special Combos
+              </h2>
             </div>
-            
-            <div className="space-y-6">
-              {combos.map((combo) => (
-                <div key={combo.id} className="bg-white rounded-lg shadow-md p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-800">{combo.name}</h3>
-                      <p className="text-sm text-gray-500">{combo.description}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xl font-bold text-gray-900">₹{combo.combo_price}</span>
-                      <p className="text-xs text-gray-500">
-                        Save ₹{combo.products.reduce((sum, p) => sum + p.product.price * p.quantity, 0) - combo.combo_price}
-                      </p>
-                    </div>
+            {/* <span className="text-sm text-gray-500">{combos.length} items</span> */}
+          </div>
+          
+          <div className="space-y-6">
+            {combos.map((combo) => (
+              <div key={combo.id} className="bg-white rounded-lg shadow-md p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-800">{combo.name}</h3>
+                    <p className="text-sm text-gray-500">{combo.description}</p>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-                    {combo.products.map((item) => (
-                      <div key={item.product.id} className="border p-2 rounded-md">
-                        <img 
-                          src={item.product.images[0] || 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop'} 
-                          alt={item.product.name} 
-                          className="w-full h-24 object-cover rounded-md mb-2"
-                        />
-                        <p className="text-sm font-medium text-gray-700">{item.product.name}</p>
-                        <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
-                        <p className="text-xs font-semibold text-gray-900">₹{item.product.price}</p>
-                      </div>
-                    ))}
+                  <div className="text-right">
+                    <span className="text-xl font-bold text-gray-900">₹{combo.combo_price}</span>
+                    <p className="text-xs text-gray-500">
+                      Save ₹{combo.products.reduce((sum, p) => sum + p.product.price * p.quantity, 0) - combo.combo_price}
+                    </p>
                   </div>
-                  <button 
-                    onClick={() => handleAddComboToCart(combo)}
-                    className="w-full bg-emerald-500 text-white py-2 rounded-md hover:bg-emerald-600 transition font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    disabled={combo.products.some(p => p.product.stock_quantity === 0)}
-                  >
-                    {combo.products.every(p => p.product.stock_quantity > 0) ? 'ADD COMBO TO CART' : 'OUT OF STOCK'}
-                  </button>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+                  {combo.products.map((item) => (
+                    <div key={item.product.id} className="border p-2 rounded-md">
+                      <img 
+                        src={item.product.images[0] || 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop'} 
+                        alt={item.product.name} 
+                        className="w-full h-24 object-cover rounded-md mb-2"
+                      />
+                      <p className="text-sm font-medium text-gray-700">{item.product.name}</p>
+                      <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                      <p className="text-xs font-semibold text-gray-900">₹{item.product.price}</p>
+                    </div>
+                  ))}
+                </div>
+                <button 
+                  onClick={() => handleAddComboToCart(combo)}
+                  className="w-full bg-emerald-500 text-white py-2 rounded-md hover:bg-emerald-600 transition font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  disabled={combo.products.some(p => p.product.stock_quantity === 0)}
+                >
+                  {combo.products.every(p => p.product.stock_quantity > 0) ? 'ADD COMBO TO CART' : 'OUT OF STOCK'}
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* All Products Section with Lazy Loading */}
         <section className="mb-8 sm:mb-16">
           <div className="flex items-center justify-between mb-4 sm:mb-6 px-2">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-800">All Products</h2>
-            <span className="text-sm text-gray-500">{allProducts.length} items</span>
+            {/* <span className="text-sm text-gray-500">{allProducts.length} items</span> */}
           </div>
           
           {error && (

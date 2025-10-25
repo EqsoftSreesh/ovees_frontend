@@ -176,17 +176,17 @@ const Header = ({ cartCount, addToCart, setSelectedProduct }) => {
     }
   }, [categories, hasMoreProducts, loadingProducts])
 
-  // Get category icon/image - you can customize this based on your category names
-  const getCategoryIcon = (categoryName) => {
-    // Return a default icon or you can map specific icons to categories
-    return '🏷️'
-  }
+  // // Get category icon/image - you can customize this based on your category names
+  // const getCategoryIcon = (categoryName) => {
+  //   // Return a default icon or you can map specific icons to categories
+  //   return '🏷️'
+  // }
 
   return (
     <header className={`bg-gray-700 shadow-md sticky top-0 z-40 transform transition-transform duration-300 ease-in-out ${
       isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
     }`}>
-      <div className="bg-yellow-400 text-gray-800 py-2 px-4 text-center text-xs sm:text-sm font-semibold">
+      {/* <div className="bg-yellow-400 text-gray-800 py-2 px-4 text-center text-xs sm:text-sm font-semibold">
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <span>🚚 Home Delivery </span>
           <span>|</span>
@@ -194,7 +194,7 @@ const Header = ({ cartCount, addToCart, setSelectedProduct }) => {
           <span>|</span>
           <span>🛍️ All Offers</span>
         </div>
-      </div>
+      </div> */}
 
       <div className="container mx-auto px-2 sm:px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
@@ -269,9 +269,9 @@ const Header = ({ cartCount, addToCart, setSelectedProduct }) => {
                 onClick={() => handleCategoryClick(cat)}
                 className="flex flex-col items-center justify-center min-w-[80px] px-3 py-2 cursor-pointer group hover:bg-gray-50 rounded-lg transition-all"
               >
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                {/* <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                   <span className="text-2xl">{getCategoryIcon(cat.name)}</span>
-                </div>
+                </div> */}
                 <span className="text-xs font-medium text-gray-700 text-center line-clamp-2 group-hover:text-teal-600">
                   {cat.name}
                 </span>
@@ -279,7 +279,7 @@ const Header = ({ cartCount, addToCart, setSelectedProduct }) => {
             ))}
           </div>
         </div>
-      </div>
+      </div>  
 
 
       {/* Mobile Sidebar Menu - Slides from Left */}

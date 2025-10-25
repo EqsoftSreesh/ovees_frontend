@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Home from './pages/Home'
 import SearchResults from './pages/SearchResults'
 import CategoryProducts from './pages/CategoryProducts'
@@ -7,9 +7,13 @@ import Header from './components/Header'
 import CartPage from './pages/CartPage'
 import ProductDetailModal from './components/ProductDetailModal'
 import FloatingCartButton from './components/FloatingCartButton'
+import { saveCartToCookie, getCartFromCookie } from './utils/cartStorage'
 
 function App() {
-  const [cartItems, setCartItems] = useState([])
+  const [cartItems, setCartItems] = useState(() => {
+    // Initialize cart from cookies on app load
+    return getCartFromCookie()
+  })
   const [selectedProduct, setSelectedProduct] = useState(null)
 
   const addToCart = (item, quantity = 1) => {
@@ -57,6 +61,11 @@ function App() {
       )
     )
   }
+
+  // Save cart to cookies whenever it changes
+  useEffect(() => {
+    saveCartToCookie(cartItems)
+  }, [cartItems])
 
   return (
     <BrowserRouter>
