@@ -41,11 +41,11 @@ const ProductCard = ({ product, onProductClick, onAddToCart, cartItems = [] }) =
     <div className={`bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${
       isClicked ? 'scale-95' : ''
     }`}>
-      <div className="relative cursor-pointer" onClick={onProductClick}>
+      <div className="relative cursor-pointer bg-gray-50 flex items-center justify-center" onClick={onProductClick}>
         <img 
           src={imageUrl} 
           alt={product.name} 
-          className="w-full h-48 object-cover"
+          className="w-full h-48 object-contain"
           loading="lazy"
           decoding="async"
         />

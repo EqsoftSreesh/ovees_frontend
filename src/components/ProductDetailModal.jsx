@@ -46,11 +46,11 @@ const ProductDetailModal = ({ product, onClose,onAddToCart}) => {
           {/* Left Side - Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
+            <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
               <img
                 src={images[selectedImageIndex]}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
               
               {/* Image Navigation Arrows */}
@@ -92,7 +92,7 @@ const ProductDetailModal = ({ product, onClose,onAddToCart}) => {
                   <button
                     key={index}
                     onClick={() => setSelectedImageIndex(index)}
-                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition ${
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition flex items-center justify-center bg-gray-50 ${
                       selectedImageIndex === index
                         ? 'border-teal-500'
                         : 'border-gray-200 hover:border-gray-400'
@@ -101,7 +101,7 @@ const ProductDetailModal = ({ product, onClose,onAddToCart}) => {
                     <img
                       src={img}
                       alt={`${product.name} ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                   </button>
                 ))}
