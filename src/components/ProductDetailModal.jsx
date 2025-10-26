@@ -32,7 +32,7 @@ const ProductDetailModal = ({ product, onClose,onAddToCart}) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-white z-[70] overflow-y-auto">
       {/* Close Button */}
       <button
         onClick={onClose}
