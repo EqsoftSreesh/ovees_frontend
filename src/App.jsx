@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import Home from './pages/Home'
 import SearchResults from './pages/SearchResults'
@@ -15,7 +15,6 @@ import { saveCartToCookie, getCartFromCookie } from './utils/cartStorage'
 
 function App() {
   const [cartItems, setCartItems] = useState(() => {
-    // Initialize cart from cookies on app load
     return getCartFromCookie()
   })
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -28,7 +27,6 @@ function App() {
       )
       if (existingItem) {
         const newQuantity = existingItem.quantity + quantity
-        // Remove item if quantity becomes 0 or negative
         if (newQuantity <= 0) {
           return prev.filter(cartItem => 
             !(item.is_combo ? cartItem.id === `combo-${item.id}` : cartItem.id === item.id)
@@ -40,7 +38,6 @@ function App() {
             : cartItem
         )
       }
-      // Only add if quantity is positive
       if (quantity > 0) {
         return [...prev, { ...item, quantity }]
       }
@@ -66,7 +63,12 @@ function App() {
     )
   }
 
-  // Save cart to cookies whenever it changes
+  // New function to reload a previous order
+  const loadPreviousOrder = (orderItems) => {
+    console.log('Loading previous order:', orderItems)
+    setCartItems(orderItems)
+  }
+
   useEffect(() => {
     saveCartToCookie(cartItems)
   }, [cartItems])
@@ -90,7 +92,14 @@ function App() {
           <Route path="/" element={<Home addToCart={addToCart} cartItems={cartItems} />} />
           <Route path="/search" element={<SearchResults addToCart={addToCart} cartItems={cartItems} />} />
           <Route path="/category" element={<CategoryProducts addToCart={addToCart} cartItems={cartItems} />} />
-          <Route path="/cart" element={<CartPage cartItems={cartItems} removeFromCart={removeFromCart} updateQuantity={updateQuantity} />} />
+          <Route path="/cart" element={
+            <CartPage 
+              cartItems={cartItems} 
+              removeFromCart={removeFromCart} 
+              updateQuantity={updateQuantity}
+              loadPreviousOrder={loadPreviousOrder}
+            />
+          } />
           <Route path="/new-arrivals" element={<NewArrivalsPage addToCart={addToCart} cartItems={cartItems} />} />
           <Route path="/99-store" element={<NinetynineStorePage addToCart={addToCart} cartItems={cartItems} />} />
           <Route path="/199-store" element={<OneNinetynineStorePage addToCart={addToCart} cartItems={cartItems} />} />

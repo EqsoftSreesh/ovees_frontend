@@ -1,6 +1,6 @@
-// Cookie utility functions for cart persistence
-
+// cartStorage.js
 const CART_COOKIE_NAME = 'ovees_cart'
+const ORDERS_STORAGE_KEY = 'ovees_previous_orders'
 const COOKIE_EXPIRY_DAYS = 30
 
 /**
@@ -56,5 +56,42 @@ export const clearCartCookie = () => {
     console.log('✅ Cart cleared from cookies')
   } catch (error) {
     console.error('❌ Error clearing cart from cookies:', error)
+  }
+}
+
+/**
+ * Save order to local storage
+ * @param {Array} orderItems - Array of items in the order
+ */
+export const saveOrderToStorage = (orderItems) => {
+  try {
+    const timestamp = new Date().toISOString()
+    const order = { items: orderItems, timestamp, id: Date.now() }
+    const previousOrders = getPreviousOrders()
+    const updatedOrders = [...previousOrders, order]
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(updatedOrders))
+    console.log('✅ Order saved to local storage:', order)
+  } catch (error) {
+    console.error('❌ Error saving order to local storage:', error)
+  }
+}
+
+/**
+ * Get previous orders from local storage
+ * @returns {Array} Array of previous orders
+ */
+export const getPreviousOrders = () => {
+  try {
+    const ordersJSON = localStorage.getItem(ORDERS_STORAGE_KEY)
+    if (ordersJSON) {
+      const orders = JSON.parse(ordersJSON)
+      console.log('✅ Previous orders loaded:', orders.length, 'orders')
+      return orders
+    }
+    console.log('ℹ️ No previous orders found')
+    return []
+  } catch (error) {
+    console.error('❌ Error reading previous orders:', error)
+    return []
   }
 }
