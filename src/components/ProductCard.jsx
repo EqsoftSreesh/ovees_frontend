@@ -138,7 +138,7 @@ const ProductCard = ({ product, onProductClick, onAddToCart, cartItems = [] }) =
           {product.name}
         </h3>
 
-        {/* Rating (Mock - you can replace with real rating) */}
+        {/* Rating (Mock - you can replace with real rating)
         <div className="flex items-center gap-1 mb-3">
           <div className="flex items-center">
             {[...Array(5)].map((_, i) => (
@@ -149,10 +149,10 @@ const ProductCard = ({ product, onProductClick, onAddToCart, cartItems = [] }) =
             ))}
           </div>
           <span className="text-xs text-gray-500 ml-1">(4.0)</span>
-        </div>
+        </div> */}
 
-        {/* Price Section */}
-        <div className="mb-4">
+      {/* Price Section */}
+      <div className="mb-4 h-20 flex flex-col justify-start">
           {product.offer_price ? (
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">

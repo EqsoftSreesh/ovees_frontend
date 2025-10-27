@@ -265,14 +265,7 @@ const Header = ({ cartCount, addToCart, setSelectedProduct, onCartIconClick }) =
 
           {/* Cart Icon */}
           <button
-            onClick={(e) => {
-              if (window.innerWidth >= 768 && onCartIconClick) {
-                e.preventDefault();
-                onCartIconClick();
-              } else {
-                navigate('/cart');
-              }
-            }}
+           onClick={() => navigate('/cart')}
             className="relative flex items-center gap-2 px-3 py-2 rounded-full hover:bg-gray-700 transition"
           >
             <ShoppingCart className="w-6 h-6 text-white" />
