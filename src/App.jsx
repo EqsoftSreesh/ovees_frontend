@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import Home from './pages/Home'
 import SearchResults from './pages/SearchResults'
@@ -14,6 +14,17 @@ import FloatingCartButton from './components/FloatingCartButton'
 import CartSidebar from './components/CartSidebar'
 import { saveCartToCookie, getCartFromCookie } from './utils/cartStorage'
 import OrderHistory from './pages/OrderHistory'
+
+function CartFAB({ cartItems, onCartClick }) {
+  const location = useLocation()
+  if (location.pathname === '/cart') return null
+  return (
+    <FloatingCartButton
+      cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+      onCartClick={onCartClick}
+    />
+  )
+}
 
 function App() {
   const [cartItems, setCartItems] = useState(() => {
@@ -119,12 +130,10 @@ function App() {
           removeFromCart={removeFromCart}
           updateQuantity={updateQuantity}
         />
-        {typeof window !== 'undefined' && window.location.pathname !== '/cart' && (
-          <FloatingCartButton 
-            cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)} 
-            onCartClick={() => setIsCartSidebarOpen(true)}
-          />
-        )}
+          <CartFAB
+          cartItems={cartItems}
+          onCartClick={() => setIsCartSidebarOpen(true)}
+        />
       </div>
     </BrowserRouter>
   )

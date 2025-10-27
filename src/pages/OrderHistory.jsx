@@ -1,15 +1,34 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getPreviousOrders } from '../utils/cartStorage'
+import { getPreviousOrders, getCartFromCookie, setPendingReorder } from '../utils/cartStorage'
 
 const OrderHistory = () => {
   const navigate = useNavigate()
   const previousOrders = getPreviousOrders()
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [selectedOrderItems, setSelectedOrderItems] = useState([])
+
+  const handleReorder = (items) => {
+    const currentCart = getCartFromCookie()
+    if (currentCart && currentCart.length > 0) {
+      setSelectedOrderItems(items)
+      setDialogOpen(true)
+    } else {
+      setPendingReorder(items, 'replace')
+      navigate('/cart')
+    }
+  }
+
+  const applyReorder = (mode) => {
+    setPendingReorder(selectedOrderItems, mode)
+    setDialogOpen(false)
+    navigate('/cart')
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-teal-600 text-white p-4 flex justify-between items-center sticky top-0 z-10 shadow-md">
-        <h2 className="text-xl font-bold">Order History</h2>
+        <h2 className="text-xl font-bold">Attempted to WhatsApp Orders history</h2>
         <button onClick={() => navigate('/')} className="text-white hover:text-gray-200 transition">
           Home
         </button>
@@ -59,12 +78,49 @@ const OrderHistory = () => {
                       )
                     })}
                   </div>
+                  {/* <div className="flex justify-end">
+                    <button
+                      onClick={() => handleReorder(order.items)}
+                      className="px-4 py-2 rounded-md bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700 transition"
+                    >
+                      Reorder
+                    </button>
+                  </div> */}
                 </div>
               )
             })}
           </div>
         )}
       </main>
+
+      {/* {dialogOpen && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Cart has items</h3>
+            <p className="text-sm text-gray-600 mb-4">Do you want to add these items to your existing cart or start a new order?</p>
+            <div className="flex flex-col sm:flex-row gap-2 justify-end">
+              <button
+                onClick={() => applyReorder('merge')}
+                className="px-4 py-2 rounded-md bg-gray-100 text-gray-800 text-sm font-semibold hover:bg-gray-200 transition"
+              >
+                Add to existing
+              </button>
+              <button
+                onClick={() => applyReorder('replace')}
+                className="px-4 py-2 rounded-md bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700 transition"
+              >
+                Start new order
+              </button>
+              <button
+                onClick={() => setDialogOpen(false)}
+                className="px-3 py-2 rounded-md text-sm text-gray-500 hover:text-gray-700"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )} */}
     </div>
   )
 }

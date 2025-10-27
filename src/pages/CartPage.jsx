@@ -1,12 +1,41 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Trash2, Tag, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { saveOrderToStorage, getPreviousOrders, clearCartCookie } from '../utils/cartStorage'
+import { saveOrderToStorage, getPreviousOrders, clearCartCookie, getPendingReorder, clearPendingReorder } from '../utils/cartStorage'
 import { sendCartOrderViaWhatsapp, openCartOrderPrintPreview } from '../utils/cartWhatsapp'
 
 const CartPage = ({ cartItems, removeFromCart, updateQuantity, loadPreviousOrder }) => {
   const navigate = useNavigate()
   const previousOrders = getPreviousOrders()
+
+  // Apply pending reorder if present
+  useEffect(() => {
+    const pending = getPendingReorder()
+    if (!pending || !pending.items || pending.items.length === 0) return
+
+    const mode = pending.mode === 'merge' ? 'merge' : 'replace'
+    let nextCart = []
+    if (mode === 'replace') {
+      nextCart = pending.items
+    } else {
+      const map = new Map()
+      // seed with existing cart
+      cartItems.forEach((it) => map.set(it.id, { ...it }))
+      // merge in reorder items by id
+      pending.items.forEach((it) => {
+        if (map.has(it.id)) {
+          const prev = map.get(it.id)
+          map.set(it.id, { ...prev, quantity: (prev.quantity || 0) + (it.quantity || 0) })
+        } else {
+          map.set(it.id, { ...it })
+        }
+      })
+      nextCart = Array.from(map.values())
+    }
+    loadPreviousOrder(nextCart)
+    clearPendingReorder()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => {

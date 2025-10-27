@@ -195,9 +195,9 @@ const Header = ({ cartCount, addToCart, setSelectedProduct, onCartIconClick }) =
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <span>🚚 Home Delivery </span>
           <span>|</span>
-          <span>📍 Track your order</span>
+          <span></span>
           <span>|</span>
-          <span>🛍️ All Offers</span>
+          <span></span>
         </div>
       </div>
 
