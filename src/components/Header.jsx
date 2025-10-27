@@ -193,11 +193,11 @@ const Header = ({ cartCount, addToCart, setSelectedProduct, onCartIconClick }) =
     }`}>
       <div className="bg-yellow-400 text-gray-800 py-2 px-4 text-center text-xs sm:text-sm font-semibold">
         <div className="flex items-center justify-center gap-4 flex-wrap">
-          <span>🚚 Home Delivery </span>
+          <span>Home Delivery </span>
           <span>|</span>
-          <span></span>
+          <span>Contact us</span>
           <span>|</span>
-          <span></span>
+          <span>About Us</span>
         </div>
       </div>
 
