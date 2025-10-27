@@ -34,22 +34,22 @@ const BannerCards = ({ onCardClick }) => {
   }
 
   return (
-    <div className="flex flex-wrap gap-3 mb-12 px-2">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-12 px-2">
       {cards.map((card) => {
         const Icon = card.icon
         return (
           <button
             key={card.id}
             onClick={() => handleCardClick(card.id)}
-            className="flex items-center gap-2.5 px-5 py-3 bg-white border border-gray-200 rounded-full shadow-sm hover:shadow-md hover:border-gray-900 transition-all duration-200 group"
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-full shadow-sm hover:shadow-md hover:border-gray-900 transition-all duration-200 group"
           >
-            <div className="p-1.5 bg-gray-900 rounded-full">
+            <div className="p-1.5 bg-gray-900 rounded-full flex-shrink-0">
               <Icon className="w-4 h-4 text-white" strokeWidth={2} />
             </div>
-            <span className="text-sm font-semibold text-gray-900">
+            <span className="text-sm font-semibold text-gray-900 truncate">
               {card.title}
             </span>
-            <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-900 group-hover:translate-x-0.5 transition-all" strokeWidth={2} />
+            <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-900 group-hover:translate-x-0.5 transition-all flex-shrink-0" strokeWidth={2} />
           </button>
         )
       })}
