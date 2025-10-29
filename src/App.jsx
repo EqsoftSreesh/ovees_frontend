@@ -16,6 +16,7 @@ import FloatingCartButton from './components/FloatingCartButton'
 import CartSidebar from './components/CartSidebar'
 import { saveCartToCookie, getCartFromCookie } from './utils/cartStorage'
 import OrderHistory from './pages/OrderHistory'
+import ProductDetailPage from './pages/ProductDetailPage'
 
 function CartFAB({ cartItems, onCartClick }) {
   const location = useLocation()
@@ -48,6 +49,11 @@ function App() {
             !(item.is_combo ? cartItem.id === `combo-${item.id}` : cartItem.id === item.id)
           )
         }
+        // Check if new quantity exceeds stock
+        if (newQuantity > item.stock_quantity) {
+          console.warn(`Cannot add more items. Only ${item.stock_quantity} items available.`)
+          return prev
+        }
         return prev.map(cartItem =>
           (item.is_combo ? cartItem.id === `combo-${item.id}` : cartItem.id === item.id)
             ? { ...cartItem, quantity: newQuantity }
@@ -55,6 +61,11 @@ function App() {
         )
       }
       if (quantity > 0) {
+        // Check if quantity exceeds stock for new items
+        if (quantity > item.stock_quantity) {
+          console.warn(`Cannot add items. Only ${item.stock_quantity} items available.`)
+          return prev
+        }
         return [...prev, { ...item, quantity }]
       }
       return prev
@@ -74,9 +85,17 @@ function App() {
       return
     }
     setCartItems(prev =>
-      prev.map(item =>
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      )
+      prev.map(item => {
+        if (item.id === itemId) {
+          // Check if new quantity exceeds stock
+          if (newQuantity > item.stock_quantity) {
+            console.warn(`Cannot update quantity. Only ${item.stock_quantity} items available.`)
+            return item
+          }
+          return { ...item, quantity: newQuantity }
+        }
+        return item
+      })
     )
   }
 
@@ -125,6 +144,7 @@ function App() {
           <Route path="/199-store" element={<OneNinetynineStorePage addToCart={addToCart} cartItems={cartItems} />} />
           <Route path="/combos" element={<CombosPage addToCart={addToCart} cartItems={cartItems} />} />
           <Route path="/orders" element={<OrderHistory />} />
+          <Route path="/product/:code" element={<ProductDetailPage addToCart={addToCart} cartItems={cartItems} />} />
         </Routes>
         {/* Cart Sidebar: Only for desktop (hidden on mobile) */}
         <CartSidebar

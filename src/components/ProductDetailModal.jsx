@@ -1,15 +1,51 @@
-import React, { useState } from 'react'
-import { X, ChevronLeft, ChevronRight, ShoppingCart, Minus, Plus } from 'lucide-react'
+import React, { useState, useRef, useEffect } from 'react'
+import { X, ChevronLeft, ChevronRight, ShoppingCart, Minus, Plus, Check, Loader2 } from 'lucide-react'
+import { API_BASE_URL } from '../config/api'
+import ProductCard from './ProductCard'
 
-const ProductDetailModal = ({ product, onClose,onAddToCart}) => {
+const ProductDetailModal = ({ product, onClose, onAddToCart, cartItems = [] }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [quantity, setQuantity] = useState(1)
+  const [isClicked, setIsClicked] = useState(false)
+  const [recommendedProducts, setRecommendedProducts] = useState([])
+  const [loadingRecommended, setLoadingRecommended] = useState(false)
+  const loadingRef = useRef(false)
+  
+  // Check if product is in cart
+  const cartItem = cartItems.find(item => item.id === product.id)
+  const quantityInCart = cartItem ? cartItem.quantity : 0
 
   if (!product) return null
 
   const images = product.images && product.images.length > 0 
     ? product.images 
     : ['https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&h=800&fit=crop']
+
+  // Fetch recommended products from same category
+  useEffect(() => {
+    const fetchRecommendedProducts = async () => {
+      if (!product.category?.id) return
+      
+      try {
+        setLoadingRecommended(true)
+        const response = await fetch(`${API_BASE_URL}/products?category_id=${product.category.id}&limit=6`)
+        if (response.ok) {
+          const data = await response.json()
+          // Extract items array from response
+          const items = data.items || data || []
+          // Filter out current product and limit to 5
+          const filtered = items.filter(p => p.id !== product.id).slice(0, 5)
+          setRecommendedProducts(filtered)
+        }
+      } catch (err) {
+        console.error('Failed to fetch recommended products:', err)
+      } finally {
+        setLoadingRecommended(false)
+      }
+    }
+
+    fetchRecommendedProducts()
+  }, [product.id, product.category?.id])
 
   const handlePrevImage = () => {
     setSelectedImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
@@ -22,6 +58,18 @@ const ProductDetailModal = ({ product, onClose,onAddToCart}) => {
   const incrementQuantity = () => {
     if (quantity < product.stock_quantity) {
       setQuantity(prev => prev + 1)
+    }
+  }
+  
+  const handleAddToCart = () => {
+    if (!loadingRef.current) {
+      loadingRef.current = true
+      onAddToCart(product, quantity)
+      setIsClicked(true)
+      setTimeout(() => {
+        setIsClicked(false)
+        loadingRef.current = false
+      }, 500)
     }
   }
 
@@ -74,9 +122,14 @@ const ProductDetailModal = ({ product, onClose,onAddToCart}) => {
               {/* Stock Badge */}
               <div className="absolute top-4 left-4">
                 {product.stock_quantity > 0 ? (
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    In Stock
-                  </span>
+                  <div className="flex flex-col space-y-1">
+                    <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      In Stock
+                    </span>
+                    <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs text-center">
+                      {product.stock_quantity} {product.stock_quantity === 1 ? 'item' : 'items'} left
+                    </span>
+                  </div>
                 ) : (
                   <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                     Out of Stock
@@ -124,11 +177,11 @@ const ProductDetailModal = ({ product, onClose,onAddToCart}) => {
             </h1>
 
             {/* Product Code */}
-            {product.product_code && (
+            {/* {product.product_code && (
               <p className="text-sm text-gray-500">
                 Product Code: <span className="font-medium">{product.product_code}</span>
               </p>
-            )}
+            )} */}
 
             {/* Price */}
             <div className="flex items-baseline gap-3 flex-wrap">
@@ -177,42 +230,60 @@ const ProductDetailModal = ({ product, onClose,onAddToCart}) => {
               </div>
             )}
 
-            {/* Quantity Selector */}
-            {product.stock_quantity > 0 && (
-              <div className="space-y-2">
-                <label className="font-semibold text-gray-900">Quantity</label>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={decrementQuantity}
-                    disabled={quantity <= 1}
-                    className="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-teal-500 hover:text-teal-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <span className="text-xl font-semibold w-12 text-center">
-                    {quantity}
-                  </span>
-                  <button
-                    onClick={incrementQuantity}
-                    disabled={quantity >= product.stock_quantity}
-                    className="w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-teal-500 hover:text-teal-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
-
+ 
+            
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
-           <button
-  onClick={() => onAddToCart(product, quantity)}
-  disabled={product.stock_quantity === 0 || quantity === 0}
-  className="flex-1 bg-emerald-500 text-white py-3 px-6 rounded-lg hover:bg-emerald-600 transition font-semibold flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
->
-  <ShoppingCart className="w-5 h-5" />
-  {product.stock_quantity > 0 ? `Add to Cart (${quantity})` : 'Out of Stock'}
-</button>
+              {quantityInCart > 0 ? (
+                <div className="w-full">
+                  <div className="flex items-center justify-between bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-500 rounded-xl p-1.5 shadow-md">
+                    <button
+                      onClick={() => onAddToCart(product, -1)}
+                      className="bg-white hover:bg-emerald-100 text-emerald-600 w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md active:scale-95 group/btn"
+                    >
+                      <Minus className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                    </button>
+                    <div className="flex flex-col items-center px-2">
+                      <span className="font-black text-emerald-600 text-xl">{quantityInCart}</span>
+                      <span className="text-xs text-emerald-600 font-semibold">in cart</span>
+                    </div>
+                    <button
+                      onClick={() => onAddToCart(product, 1)}
+                      className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed group/btn"
+                      disabled={quantityInCart >= product.stock_quantity}
+                    >
+                      <Plus className="w-5 h-5 group-hover/btn:scale-110 transition-transform" />
+                    </button>
+                  </div>
+                  {isClicked && (
+                    <div className="absolute inset-0 bg-emerald-500/20 rounded-xl flex items-center justify-center animate-ping">
+                      <Check className="w-6 h-6 text-emerald-600" />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={handleAddToCart}
+                  disabled={product.stock_quantity === 0 || quantity === 0}
+                  className={`flex-1 py-3 px-6 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${
+                    isClicked 
+                      ? 'bg-white border-2 border-emerald-500 text-emerald-500' 
+                      : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-md hover:shadow-lg'
+                  } disabled:bg-gray-300 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed disabled:shadow-none`}
+                >
+                  {isClicked ? (
+                    <>
+                      <Check className="w-5 h-5" />
+                      Added to Cart
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className="w-5 h-5" />
+                      {product.stock_quantity > 0 ? `Add to Cart (${quantity})` : 'Out of Stock'}
+                    </>
+                  )}
+                </button>
+              )}
             </div>
 
             {/* Additional Info */}
@@ -232,6 +303,29 @@ const ProductDetailModal = ({ product, onClose,onAddToCart}) => {
             </div>
           </div>
         </div>
+
+        {/* Recommended Products Section */}
+        {recommendedProducts.length > 0 && (
+          <div className="mt-12 border-t pt-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Recommended Products</h2>
+            {loadingRecommended ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                {recommendedProducts.map((recProduct) => (
+                  <ProductCard
+                    key={recProduct.id}
+                    product={recProduct}
+                    onAddToCart={onAddToCart}
+                    cartItems={cartItems}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
