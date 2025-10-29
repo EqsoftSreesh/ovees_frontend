@@ -144,7 +144,7 @@ function App() {
           <Route path="/199-store" element={<OneNinetynineStorePage addToCart={addToCart} cartItems={cartItems} />} />
           <Route path="/combos" element={<CombosPage addToCart={addToCart} cartItems={cartItems} />} />
           <Route path="/orders" element={<OrderHistory />} />
-          <Route path="/product/:code" element={<ProductDetailPage addToCart={addToCart} cartItems={cartItems} />} />
+          <Route path="/product/:id" element={<ProductDetailPage addToCart={addToCart} cartItems={cartItems} />} />
         </Routes>
         {/* Cart Sidebar: Only for desktop (hidden on mobile) */}
         <CartSidebar

@@ -47,7 +47,7 @@ const ProductCard = ({ product, onAddToCart, cartItems = [] }) => {
   // 4. Click handlers
   // -------------------------------------------------
  const handleCardClick = () => {
-  navigate(`/product/${product.product_code}`)  // Use product_code
+  navigate(`/product/${product.id}`)  // Use product ID
 }
 
   const stopProp = (e) => e.stopPropagation()

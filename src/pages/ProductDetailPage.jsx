@@ -8,7 +8,7 @@ import { API_BASE_URL } from '../config/api'
 const API_BASE = API_BASE_URL
 
 const ProductDetailPage = ({ addToCart, cartItems = [] }) => {
-  const { code } = useParams()        // <-- Now get product_code from URL
+  const { id } = useParams()        // <-- Get product ID from URL
   const navigate = useNavigate()
 
   const [product, setProduct] = useState(null)
@@ -18,14 +18,14 @@ const ProductDetailPage = ({ addToCart, cartItems = [] }) => {
 
   useEffect(() => {
     const fetchProduct = async () => {
-      if (!code) return
+      if (!id) return
 
       try {
         setLoading(true)
         setError(null)
 
-        // Use product_code in URL
-        const response = await fetch(`${API_BASE}/products/${code}`)
+        // Fetch product by ID
+        const response = await fetch(`${API_BASE}/products/id/${id}`)
         
         if (!response.ok) {
           if (response.status === 404) throw new Error('Product not found')
@@ -42,7 +42,7 @@ const ProductDetailPage = ({ addToCart, cartItems = [] }) => {
     }
 
     fetchProduct()
-  }, [code])
+  }, [id])
 
   const handleClose = () => navigate(-1)
 
